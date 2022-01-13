@@ -6,10 +6,10 @@ from concurrent.futures import as_completed
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 
-def func(x): #Функция интеграла для вычисления
+def func(x): 
     return float(math.cos(x) + math.sin(x))
 
-def integrate(f, a, b, *, n_iter = 10000): #Вычисление интеграла на отрезке a - b
+def integrate(f, a, b, *, n_iter = 10000):
     h = (b - a) / n_iter
     i = a + h
     sum = 0
@@ -20,15 +20,14 @@ def integrate(f, a, b, *, n_iter = 10000): #Вычисление интегра�
     sum *= h
     return float(sum)
 
-def integrate_async(f, a, b, n_jobs, *, n_iter=10000): #Вычисление интеграла в ассинхронном режиме
-    executor = ProcessPoolExecutor(max_workers = n_jobs) #Количество потоков в нашей ассинхронной функции
-    spawn = partial(executor.submit, integrate, f, n_iter = n_iter // n_jobs) #Записывает значение в асинхронную функцию
+def integrate_async(f, a, b, n_jobs, *, n_iter=10000): 
+    executor = ProcessPoolExecutor(max_workers = n_jobs)
+    spawn = partial(executor.submit, integrate, f, n_iter = n_iter // n_jobs) 
     step = (b - a) / n_jobs
-    fs = [spawn(a + i * step, a + (i + 1) * step) for i in range(n_jobs)] #Вычисление интеграла в асинхроне
-    return sum(f.result() for f in as_completed(fs)) #Возврашение результата на экран после работы в асинхронном режиме
+    fs = [spawn(a + i * step, a + (i + 1) * step) for i in range(n_jobs)] 
+    return sum(f.result() for f in as_completed(fs)) 
 
 if __name__ == "__main__":
-
     print("Result for lab 3: ", integrate(func, -10, 10))
     print("Time: ", timeit.timeit('integrate(func, -10, 10)', globals = globals(), number = 100), "\n")
 
